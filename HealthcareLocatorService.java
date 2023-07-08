@@ -1,42 +1,50 @@
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 class HealthcareLocatorService {
     private List<HealthcareProvider> healthcareProviders;
 
     public HealthcareLocatorService() {
         healthcareProviders = new ArrayList<>();
-        healthcareProviders.add(new HealthcareProvider("Hospital A", "123 Main St, City A", "123-456-7890", 40.123, -74.456, true));
-        healthcareProviders.add(new HealthcareProvider("Hospital B", "456 Elm St, City B", "987-654-3210", 41.789, -72.345, false));
-        // Add more healthcare providers...
+        // You can initialize healthcare providers here or fetch them from the API
     }
 
     public List<HealthcareProvider> findNearbyHealthcareProviders(double userLatitude, double userLongitude, double radius) {
         List<HealthcareProvider> nearbyProviders = new ArrayList<>();
 
-        for (HealthcareProvider provider : healthcareProviders) {
-            double distance = calculateDistance(userLatitude, userLongitude, provider.getLatitude(), provider.getLongitude());
+        // Make a network request to retrieve healthcare provider data
+        try {
+            URL url = new URL("https://www.communitybenefitinsight.org/api/get_hospitals?latitude=" + userLatitude + "&longitude=" + userLongitude + "&radius=" + radius);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
-            if (distance <= radius) {
-                nearbyProviders.add(provider);
+            // Check if the request was successful
+            if (conn.getResponseCode() == 200) {
+                Scanner scanner = new Scanner(conn.getInputStream());
+
+                // Read the response and parse healthcare provider data
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    // Parse the line and create a HealthcareProvider object
+                    // Add the provider to the nearbyProviders list
+                }
+
+                scanner.close();
+            } else {
+                System.out.println("Failed to retrieve healthcare provider data. Response code: " + conn.getResponseCode());
             }
+
+            conn.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return nearbyProviders;
     }
 
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        double earthRadius = 6371; // in kilometers
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return earthRadius * c;
-    }
+    // Other methods for fetching, parsing, and storing data from the API
 }
