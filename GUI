@@ -1,0 +1,81 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class HealthcareAppGUI {
+    private JFrame frame;
+    private JTextField latitudeField;
+    private JTextField longitudeField;
+    private JTextField radiusField;
+    private JTextArea outputArea;
+
+    public HealthcareAppGUI() {
+        initialize();
+    }
+
+    private void initialize() {
+        frame = new JFrame("Healthcare App");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+
+        JLabel latitudeLabel = new JLabel("Latitude:");
+        latitudeField = new JTextField();
+        JLabel longitudeLabel = new JLabel("Longitude:");
+        longitudeField = new JTextField();
+        JLabel radiusLabel = new JLabel("Radius (km):");
+        radiusField = new JTextField();
+        JButton searchButton = new JButton("Search");
+
+        inputPanel.add(latitudeLabel);
+        inputPanel.add(latitudeField);
+        inputPanel.add(longitudeLabel);
+        inputPanel.add(longitudeField);
+        inputPanel.add(radiusLabel);
+        inputPanel.add(radiusField);
+        inputPanel.add(searchButton);
+
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+
+        frame.add(inputPanel, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double latitude = Double.parseDouble(latitudeField.getText());
+                double longitude = Double.parseDouble(longitudeField.getText());
+                double radius = Double.parseDouble(radiusField.getText());
+
+                // Call the appropriate method from your healthcare app logic
+                // to perform the search based on the input values
+
+                // Example code to display the results
+                outputArea.setText("Searching nearby healthcare providers...\n"
+                        + "Latitude: " + latitude + "\n"
+                        + "Longitude: " + longitude + "\n"
+                        + "Radius: " + radius + " km\n"
+                        + "Results:\n"
+                        + "Hospital A\n"
+                        + "Hospital B\n"
+                        + "Hospital C\n");
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new HealthcareAppGUI();
+            }
+        });
+    }
+}
